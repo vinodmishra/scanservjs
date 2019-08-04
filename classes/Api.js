@@ -40,7 +40,7 @@ module.exports = function () {
     };
 
     _this.scan = function (req) {
-        var dateString = dateFormat(new Date(), 'yyyy-mm-dd HH.MM.ss');
+        var dateString = dateFormat(new Date(), 'yyyy-mm-dd-HH-MM-ss');
         System.extend(req, {
             outputFilepath: Config.OutputDirectory + 'Scan_' + dateString + '.tif'
         });
