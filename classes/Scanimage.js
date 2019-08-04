@@ -75,6 +75,7 @@ module.exports = function () {
 					response.output = reply.output;
 					response.code = reply.code;
 					response.image = scanRequest.outputFilepath;
+					response.type = scanRequest.type;
 					return response;
 				});
 

@@ -25,7 +25,7 @@ module.exports = function () {
             var files = list.map(function (f) {
                 return new FileInfo(outdir + f);
             }).filter(function (f) {
-                return f.extension === '.tif' || f.extension === '.jpg';
+                return f.extension === '.tif' || f.extension === '.jpg' || f.extension == '.pdf';
             });
 
             deferred.resolve(files);
@@ -39,24 +39,6 @@ module.exports = function () {
         return Q.resolve(f.delete());
     };
 
-    _this.convert = function () {
-        var options = {
-            source: Config.PreviewDirectory + 'preview.tif',
-            target: Config.PreviewDirectory + 'preview.jpg',
-            trim: false
-        };
-
-        var convert = new Convert(options);
-
-        // Ignore errors. The FileInfo will either exist or not
-        return convert.execute()
-            .then(function () {
-                var fileInfo = new FileInfo(options.target);
-                if (!fileInfo.exists()) throw new Error("File does not exist");
-                return fileInfo;
-            });
-    };
-
     _this.scan = function (req) {
         var dateString = dateFormat(new Date(), 'yyyy-mm-dd HH.MM.ss');
         System.extend(req, {
@@ -65,7 +47,20 @@ module.exports = function () {
 
         var scanRequest = new ScanRequest(req);
         var scanner = new Scanimage();
-        return scanner.execute(scanRequest);
+        var options = {
+            source: Config.OutputDirectory + 'Scan_' + dateString + '.tif',
+            target: Config.OutputDirectory + 'Scan_' + dateString + '.pdf',
+            trim: false
+        };
+        var convert = new Convert(options);
+
+        return scanner.execute(scanRequest)
+            .then(function (response) {
+                if (response.type == 'pdf') {
+                    convert.execute();
+                }
+                return response;
+            });
     };
 
     _this.preview = function (req) {
@@ -73,7 +68,8 @@ module.exports = function () {
             mode: req.mode,
             brightness: req.brightness,
             contrast: req.contrast,
-            outputFilepath: Config.PreviewDirectory + 'preview.tif',
+            format: 'jpg',
+            outputFilepath: Config.PreviewDirectory + 'preview.jpg',
             resolution: Config.PreviewResolution
         });
 

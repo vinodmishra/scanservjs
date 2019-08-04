@@ -46,7 +46,7 @@ $(document).ready(function () {
                 mode: 'Color',
                 brightness: 0,
                 contrast: 0,
-                type: 'tif'
+                format: 'tiff'
             };
         },
 
@@ -184,30 +184,18 @@ $(document).ready(function () {
                 });
         },
 
-        // Called to take the preview image and return it as
-        // a base64 encoded jpg and update the UI
-        convert: function () {
-            var o = {
-                url: 'convert',
-                type: "POST",
-                contentType: "application/json",
-                dataType: "json",
-                data: JSON.stringify(page.model.toJSON())
-            };
-
-            return $.ajax(o).then(function (fileInfo) {
-                if (fileInfo.content) {
-                    $("#image").attr('src', 'data:image/jpeg;base64,' + fileInfo.content);
-                    $("#image").css('display', 'block');
-                }
-            });            
-        },
-
         preview: function () {
             page.mask(true);
 
             // Keep reloading the preview image
-            var timer = window.setInterval(this.convert, 500);
+            var timer = window.setInterval(function () {
+                var fileInfo = new FileInfo(Config.PreviewDirectory + 'preview.jpg');
+                if (!fileInfo.exists()) throw new Error("File does not exist");
+                if (fileInfo.content) {
+                    $("#image").attr('src', 'data:image/jpeg;base64,' + fileInfo.content);
+                    $("#image").css('display', 'block');
+                }
+            }, 500);
 
             var o = {
                 url: 'preview',
@@ -266,7 +254,6 @@ $(document).ready(function () {
                 clearTimeout(page.resizeTimer);
                 page.resizeTimer = setTimeout(function () {
                     jcrop.draw();
-                    page.convert();
                 }, 100);
             });
 
@@ -426,7 +413,6 @@ $(document).ready(function () {
     // Run
     var page = new Page();
     page.mask(true);
-    page.convert();
     var jcrop = new JcropManager(page.model);
     page.diagnostics();
 });

@@ -46,19 +46,6 @@ app.get('/ping', function (req, res) {
     res.send('Pong@' + new Date().toISOString());
 });
 
-app.post('/convert', function (req, res) {
-    var api = new Api();
-    api.convert()
-        .then(function (fileInfo) {
-            fileInfo.content = fileInfo.toBase64();
-            res.send(fileInfo);
-        })
-        .fail(function (data) {
-            var err = wrapError(data);
-            res.status(500).send(err);
-        });
-});
-
 app.post('/scan', function (req, res) {
     var param = req.body;
     var api = new Api();
