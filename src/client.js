@@ -46,7 +46,8 @@ $(document).ready(function () {
                 mode: 'Color',
                 brightness: 0,
                 contrast: 0,
-                format: 'tiff'
+                format: 'tiff',
+                type: 'pdf'
             };
         },
 
