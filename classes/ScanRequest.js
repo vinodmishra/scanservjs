@@ -63,7 +63,8 @@ ScanRequest.default = {
 	format: "tiff",
 	outputFilepath: "",
 	brightness: 0,
-	contrast: 0
+	contrast: 0,
+	type: "tif"
 };
 
 module.exports = ScanRequest;
